@@ -1,12 +1,13 @@
-import './App.css'
+import { Outlet } from 'react-router-dom';
+import Navbar from './components/Navbar';
 
-function App() {
-
+export default function App() {
   return (
-    <>
-      <h1 className='text-3xl font-bold underline'>Hello World</h1>
-    </>
-  )
+    <div>
+      <Navbar />
+      <main className="p-4 max-w-5xl mx-auto">
+        <Outlet />
+      </main>
+    </div>
+  );
 }
-
-export default App
