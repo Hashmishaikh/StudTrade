@@ -4,6 +4,9 @@
   "description": "This is the studtarde",
   "main": "app.js",
   "scripts": {
+    "start": "node backend/app.js",
+    "dev": "nodemon backend/app.js",
+    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "hashmi shaikh",
