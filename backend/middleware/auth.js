@@ -25,4 +25,12 @@ exports.protect = async (req, res, next) => {
     } catch (error) {
         res.status(401).json({ message: 'Invalid token' });
     }
+};
+
+// Middleware to check if user is a seller
+exports.isSeller = (req, res, next) => {
+    if (req.user && req.user.isSeller) {
+        return next();
+    }
+    return res.status(403).json({ message: 'Access denied: Only sellers can perform this action' });
 }; 

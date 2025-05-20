@@ -1,0 +1,15 @@
+/* Custom Toastify styles for large, centered toasts */
+.Toastify__toast-container--center {
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+}
+.Toastify__toast {
+  min-width: 350px;
+  min-height: 80px;
+  font-size: 1.25rem;
+  padding: 2rem 2.5rem;
+  border-radius: 1rem;
+}

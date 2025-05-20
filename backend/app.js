@@ -13,7 +13,10 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // React dev server default port
+  credentials: true // Allow credentials (cookies)
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

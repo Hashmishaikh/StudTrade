@@ -62,4 +62,23 @@ exports.login = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+};
+
+// Get logged-in user's profile
+exports.profile = async (req, res, next) => {
+    try {
+        const user = req.user;
+        res.json({
+            status: 'success',
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                isSeller: user.isSeller
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
 }; 
+
