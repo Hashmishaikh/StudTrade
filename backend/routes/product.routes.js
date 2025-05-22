@@ -11,5 +11,4 @@ router.use(protect); // Protect all routes below this middleware
 router.post('/',isSeller, productController.createProduct);
 router.patch('/:id', isSeller, productController.updateProduct);
 router.delete('/:id', isSeller, productController.deleteProduct);
-
 module.exports = router; 

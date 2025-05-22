@@ -4,16 +4,22 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 
-const Register = () => {
+const Register = ({ sellerOnly = false }) => {
   const { setUser } = useAuth();
-  const [form, setForm] = useState({ name: '', email: '', password: '', isSeller: false });
+  const [form, setForm] = useState({ name: '', email: '', password: '', isSeller: sellerOnly });
+  const [activeTab, setActiveTab] = useState(sellerOnly ? 'seller' : 'customer');
   const navigate = useNavigate();
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setForm(prev => ({ ...prev, isSeller: tab === 'seller' }));
+  };
+
   const handleChange = e => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setForm(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     }));
   };
 
@@ -37,6 +43,29 @@ const Register = () => {
   return (
     <div className="h-[80vh] flex items-center justify-center bg-gray-50 py-12 px-4">
       <form onSubmit={handleSubmit} className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6">
+        {!sellerOnly && (
+          <div className="flex mb-6">
+            <button
+              type="button"
+              onClick={() => handleTabChange('customer')}
+              className={`flex-1 py-2 rounded-l-lg font-semibold transition-colors duration-200 ${activeTab === 'customer' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'}`}
+            >
+              Customer
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTabChange('seller')}
+              className={`flex-1 py-2 rounded-r-lg font-semibold transition-colors duration-200 ${activeTab === 'seller' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'}`}
+            >
+              Seller
+            </button>
+          </div>
+        )}
+        {sellerOnly && (
+          <div className="mb-6 text-center">
+            <span className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold text-lg">Seller Registration</span>
+          </div>
+        )}
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">Create your account</h2>
         <div className="space-y-4">
           <input
@@ -66,16 +95,6 @@ const Register = () => {
             autoComplete="new-password"
             required
           />
-          <label className="flex items-center space-x-2 text-gray-700">
-            <input
-              type="checkbox"
-              name="isSeller"
-              checked={form.isSeller}
-              onChange={handleChange}
-              className="form-checkbox h-4 w-4 text-blue-600"
-            />
-            <span>Register as Seller</span>
-          </label>
         </div>
         <button
           type="submit"

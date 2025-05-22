@@ -38,11 +38,20 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, isSeller } = req.body;
 
         const user = await User.findOne({ email });
         if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // If isSeller is provided, enforce role match
+        if (typeof isSeller === 'boolean' && user.isSeller !== isSeller) {
+            return res.status(403).json({
+                message: isSeller
+                    ? 'You are not registered as a seller.'
+                    : 'You are not registered as a customer.'
+            });
         }
 
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {

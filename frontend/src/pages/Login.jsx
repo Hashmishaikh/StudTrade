@@ -4,10 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 
-const Login = () => {
+const Login = ({ sellerOnly = false }) => {
   const { setUser } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
+  const [activeTab, setActiveTab] = useState(sellerOnly ? 'seller' : 'customer');
   const navigate = useNavigate();
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -20,14 +25,27 @@ const Login = () => {
       return;
     }
 
+    // Determine isSeller value for API
+    let isSeller = undefined;
+    if (sellerOnly) {
+      isSeller = true;
+    } else if (activeTab === 'seller') {
+      isSeller = true;
+    } else if (activeTab === 'customer') {
+      isSeller = false;
+    }
+
     try {
-      const res = await axios.post('/auth/login', form);
-      console.log('res', res)
+      const res = await axios.post('/auth/login', { ...form, isSeller });
       localStorage.setItem('token', res.data.token);
-      setUser(res.data);
-      navigate('/');
+      setUser(res.data.user);
+      // Only redirect to seller-dashboard if logging in as seller
+      if (sellerOnly || activeTab === 'seller') {
+        navigate('/seller-dashboard', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
     } catch (err) {
-      // console.log('err', err)
       toast.error(err.response.data.message);
     }
   };
@@ -35,6 +53,29 @@ const Login = () => {
   return (
     <div className="h-[80vh] flex items-center justify-center bg-gray-50 py-12 px-4">
       <form onSubmit={handleSubmit} className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6">
+        {!sellerOnly && (
+          <div className="flex mb-6">
+            <button
+              type="button"
+              onClick={() => handleTabChange('customer')}
+              className={`flex-1 py-2 rounded-l-lg font-semibold transition-colors duration-200 ${activeTab === 'customer' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'}`}
+            >
+              Customer
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTabChange('seller')}
+              className={`flex-1 py-2 rounded-r-lg font-semibold transition-colors duration-200 ${activeTab === 'seller' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-50'}`}
+            >
+              Seller
+            </button>
+          </div>
+        )}
+        {sellerOnly && (
+          <div className="mb-6 text-center">
+            <span className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold text-lg">Seller Login</span>
+          </div>
+        )}
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">Sign in to your account</h2>
         <div className="space-y-4">
           <input

@@ -62,6 +62,15 @@ exports.updateProduct = async (req, res, next) => {
             return res.status(404).json({ message: 'Product not found or unauthorized' });
         }
 
+        // If the product is marked as sold, return a sold out message
+        if (req.body.sold === true || product.sold === true) {
+            return res.json({
+                status: 'success',
+                data: product,
+                message: 'This product is sold out.'
+            });
+        }
+
         res.json({
             status: 'success',
             data: product
